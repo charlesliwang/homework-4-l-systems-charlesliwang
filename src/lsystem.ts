@@ -13,23 +13,46 @@ class LSystem {
     }
 
     initRules() {
-        this.rules["A"] = "AA";
-        this.rules["B"] = "[BA]";
+        this.rules["A"] = "ACA";
+        this.rules["B"] = "B";
+        this.rules["C"] = "[+AABA]";
         this.rules["["] = "[";
         this.rules["]"] = "]";
+        this.rules["+"] = "+";
     }
 
     expandLSystem(iters: number) {
         let new_string = "";
         for(let iter = 0; iter < iters; iter++) {
             for(let i = 0; i < this.lsystem.length; i++) {
-                let s = this.rules[this.lsystem.substring(i, i+1)]
+                let s = this.processRule(this.lsystem.substring(i, i+1), i + iters);
                 new_string = new_string.concat(s);
             }
             this.lsystem = new_string;
             new_string = "";
             console.log(this.lsystem);
         }
+    }
+    
+    hash(x: number) {
+        let f = Math.sin(vec3.dot(vec3.fromValues(x,x,x), vec3.fromValues(12.9898, 78.233, 78.156))) * 43758.5453;
+        return f - Math.floor(f);
+    }
+
+    processRule(s: string, iter: number) {
+        let hash = this.hash(iter);
+        let out = this.rules[s];
+        if(out == "+") {
+            console.log(hash);
+            if(hash < 0.25) {
+                out = "-"
+            } else if(hash < 0.5) {
+                out = "*"
+            } else if(hash < 0.75) {
+                out = "/"
+            }
+        }
+        return out;
     }
 
   };

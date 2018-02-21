@@ -18,10 +18,14 @@ module.exports = {
         test: /\.glsl$/,
         loader: 'webpack-glsl-loader'
       },
+      {
+        test: /\.obj$/,
+        loader: 'webpack-obj-loader'
+      }
     ]
   },
   resolve: {
-    extensions: ['.ts', '.js' ],
+    extensions: ['.ts', '.js'],
   },
   devtool: 'source-map',
   devServer: {
