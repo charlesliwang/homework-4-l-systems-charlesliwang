@@ -80,7 +80,7 @@ function main() {
   
 
   //LSYSTEM INIT 
-  lsystem = new LSystem(vec3.fromValues(0,0,0), "[ABA]");
+  lsystem = new LSystem(vec3.fromValues(0,0,0), "[AAA]");
 
   // Initial call to load scene
   loadScene();
@@ -128,15 +128,6 @@ function main() {
       ]);
     } 
 
-    // else if (controls.Shader == "Custom1") {
-    //   let v4 = vec4.fromValues(time,0,0,1);
-    //   customShader.setTime(v4);
-    //   renderer.render(camera, customShader, [
-    //     icosphere,
-    //     //square,
-    //     //cube,
-    //   ]);
-    // }
     stats.end();
 
     // Tell the browser to call `tick` again whenever it renders a new frame
@@ -187,6 +178,8 @@ function setOutputText(allText:string) {
   flag = true;
   output  = allText;
 }
+
+// https://dannywoodz.wordpress.com/2014/12/16/webgl-from-scratch-loading-a-mesh/
 
 function loadMeshData(string: string) {
   var lines = string.split("\n");

@@ -66,7 +66,6 @@ class LSystemMesh extends Drawable {
 
   pushFlowVBOs(center:vec3, dir: vec3, scale: number) {
         let count = 0;
-        console.log(this.flow_vertices);
         for(let i = 0; i < this.flow_vertices.length; i = i + 18) {
             let curr_idx = this.pos.length/4.0;
             for(let j = 0; j < 3; j++) {
@@ -89,7 +88,7 @@ class LSystemMesh extends Drawable {
                 vec3.transformQuat(n,n,q);
                 this.pos.push(v[0],v[1],v[2],1);
                 this.nor.push(n[0],n[0],n[0],0);
-                this.col.push(0,1,1,1);
+                this.col.push(1,0,0,1);
             }
             this.idx.push(curr_idx,curr_idx+1,curr_idx+2);
         }
@@ -215,7 +214,7 @@ class LSystemMesh extends Drawable {
         vec3.cross(up,dir,right);
         
         let s = this.lsystem.substring(i, i+1);
-        if(s == "A") {
+        if(s == "A" || s== "E") {
             if(new_branch) {
                 this.createCylinderLoop(center, center, dir, right, r, true);
             }
@@ -307,7 +306,7 @@ class LSystemMesh extends Drawable {
         }
   }
   extendCylinder(center: vec3, dir: vec3, right: vec3, off:vec3, d: number, r: number) {
-        vec3.scale(off, dir, r * d);
+        vec3.scale(off, dir, r * d * 0.8);
         vec3.add(center, off ,center);
         this.createCylinderLoop(center, center, dir, right, r, false);
   }

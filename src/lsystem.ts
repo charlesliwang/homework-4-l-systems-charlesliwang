@@ -9,16 +9,16 @@ class LSystem {
         this.initRules();
         this.lsystem = axiom;
         console.log(this.lsystem);
-        this.expandLSystem(2);
+        this.expandLSystem(3);
     }
 
     initRules() {
-        this.rules["A"] = "ACA";
-        this.rules["B"] = "B";
-        this.rules["C"] = "[+AABA]";
+        this.rules["A"] = "ACE";
+        this.rules["B"] = "CAB";
+        this.rules["C"] = "[+ABEA]";
+        this.rules["E"] = "A";
         this.rules["["] = "[";
         this.rules["]"] = "]";
-        this.rules["+"] = "+";
     }
 
     expandLSystem(iters: number) {
@@ -42,15 +42,17 @@ class LSystem {
     processRule(s: string, iter: number) {
         let hash = this.hash(iter);
         let out = this.rules[s];
-        if(out == "+") {
+        let ss = "+";
+        if(s == "C") {
             console.log(hash);
             if(hash < 0.25) {
-                out = "-"
+                ss = "-";
             } else if(hash < 0.5) {
-                out = "*"
+                ss = "*";
             } else if(hash < 0.75) {
-                out = "/"
+                ss = "/";
             }
+            out = out.replace("+",ss);
         }
         return out;
     }
