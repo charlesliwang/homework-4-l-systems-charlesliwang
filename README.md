@@ -4,8 +4,8 @@ PennKey: chawang
 
 ![](img/cactus_example.png)
 
-[Live Demo](http://charlesliwang.github.io/homework-4-l-systems-charlesliwang)
-
+[Live Demo] (http://charlesliwang.github.io/homework-4-l-systems-charlesliwang)
+(right now the objs don't work so no flowers :()
 ## Project Overview
 
 This project is a cactus generated using an L-System
@@ -27,6 +27,8 @@ E -> A\
 +-*/ -> no change
 
 Other generation rules and implementational details:
+
+First branch can't bend
 
 Radius grows as the branch grows (new branches start with half the radius they broke off from)
 
