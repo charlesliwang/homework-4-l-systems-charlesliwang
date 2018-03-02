@@ -164,7 +164,7 @@ function main() {
   camera.setAspectRatio(window.innerWidth / window.innerHeight);
   camera.updateProjectionMatrix();
 
-  readTextFile("/src/obj/cube2.obj", output);
+  readTextFile("/src/geometry/cube2.obj", output);
 
   // Start the render loop
   tick();
