@@ -4,12 +4,12 @@ class LSystem {
     lsystem: string = "";
     rules: { [input: string]: string; } = {};
     iter: number = 0;
+    last: number = 0;
 
     constructor(position: vec3, axiom: string) {
         this.initRules();
         this.lsystem = axiom;
-        console.log(this.lsystem);
-        this.expandLSystem(3);
+        //console.log(this.lsystem);
     }
 
     initRules() {
@@ -19,6 +19,10 @@ class LSystem {
         this.rules["E"] = "A";
         this.rules["["] = "[";
         this.rules["]"] = "]";
+        this.rules["+"] = "+";
+        this.rules["-"] = "-";
+        this.rules["/"] = "/";
+        this.rules["*"] = "*";
     }
 
     expandLSystem(iters: number) {
@@ -30,7 +34,7 @@ class LSystem {
             }
             this.lsystem = new_string;
             new_string = "";
-            console.log(this.lsystem);
+            //console.log(this.lsystem);
         }
     }
     
@@ -40,11 +44,11 @@ class LSystem {
     }
 
     processRule(s: string, iter: number) {
-        let hash = this.hash(iter);
+        let hash = this.last + this.hash(iter * 50.0);
+        hash = hash% 1;
         let out = this.rules[s];
         let ss = "+";
         if(s == "C") {
-            console.log(hash);
             if(hash < 0.25) {
                 ss = "-";
             } else if(hash < 0.5) {
@@ -52,6 +56,7 @@ class LSystem {
             } else if(hash < 0.75) {
                 ss = "/";
             }
+            this.last = hash;
             out = out.replace("+",ss);
         }
         return out;

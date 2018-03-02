@@ -18,6 +18,8 @@ class LSystemMesh extends Drawable {
   turtles: Turtle[] = [];
   lsystem: string = "[AAA[ABAA]AA]";
   flow_vertices: number[] = [];
+  cac_col : vec4;
+  flow_col : vec4;
 
   center: vec4;
   cylSubD: number = 8;
@@ -32,9 +34,10 @@ class LSystemMesh extends Drawable {
   }
 
   create() {
+      this.clearArrs();
     this.readLSystem(vec3.fromValues(0,0,0), vec3.fromValues(0,1,0), vec3.fromValues(0,0,1), 1, 0.5);
     //this.pushFlowVBOs(vec3.fromValues(0,2,0), vec3.fromValues(0,0,-1), 1);
-    console.log(this.pos);
+    //console.log(this.pos);
     this.indices = new Uint32Array(this.idx);
     this.normals = new Float32Array(this.nor);
     this.positions = new Float32Array(this.pos);
@@ -58,6 +61,13 @@ class LSystemMesh extends Drawable {
     gl.bufferData(gl.ARRAY_BUFFER, this.colors, gl.STATIC_DRAW);
 
     console.log(`Created LSystemMesh`);
+  }
+
+  clearArrs() {
+      this.idx = [];
+      this.pos = [];
+      this.nor = [];
+      this.col = [];
   }
 
   storeFlowVerts(vertices: number[]) {
@@ -87,8 +97,8 @@ class LSystemMesh extends Drawable {
                 let n = vec3.fromValues(n1,n2,n3);
                 vec3.transformQuat(n,n,q);
                 this.pos.push(v[0],v[1],v[2],1);
-                this.nor.push(n[0],n[0],n[0],0);
-                this.col.push(1,0,0,1);
+                this.nor.push(n[0],n[1],n[2],0);
+                this.col.push(this.flow_col[0],this.flow_col[1],this.flow_col[2],1);
             }
             this.idx.push(curr_idx,curr_idx+1,curr_idx+2);
         }
@@ -131,7 +141,7 @@ class LSystemMesh extends Drawable {
         vec3.normalize(nnorm,nnorm);
         this.pos.push(pi[0],pi[1],pi[2], 1.0);
         this.nor.push(nnorm[0],nnorm[1],nnorm[2], 0.0);
-        this.col.push(0,1,0,1);
+        this.col.push(this.cac_col[0],this.cac_col[1],this.cac_col[2],1);
         if(!init){
         if(i == this.cylSubD - 1) {
             this.idx.push(idx , p_idx , init_p_idx);
@@ -232,7 +242,6 @@ class LSystemMesh extends Drawable {
                 vec3.scale(axis,right,-1);
             }
             this.createJoint(center, dir, right, axis, off, r, 4);
-            console.log(depth);
         }
         if(s == "[") {
             let turt = new Turtle(center, dir, right, r, depth++);
@@ -242,13 +251,14 @@ class LSystemMesh extends Drawable {
         } 
         if(s == "]") {
             this.capCylinder(center,dir,right,off, 1.0, r, 4);
-            this.pushFlowVBOs(center,dir,r);
+            if(vec3.dot(dir, [0,1,0]) > 0.9) {
+                this.pushFlowVBOs(center,dir,r);
+            }
             let turt = this.turtles.pop();
             vec3.copy(center,turt.pos);
             vec3.copy(dir,turt.dir);
             vec3.copy(right,turt.right);
             depth = turt.depth;
-            console.log(depth);
             r = turt.r;
             new_branch = true;
         }

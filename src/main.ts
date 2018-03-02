@@ -14,10 +14,11 @@ import ShaderProgram, {Shader} from './rendering/gl/ShaderProgram';
 // Define an object with application parameters and button callbacks
 // This will be referred to by dat.GUI's functions that add GUI elements.
 const controls = {
-  tesselations: 7,
-  'Load Scene': loadScene, // A function pointer, essentially
-  color: [60,130,23,1],
-  'Shader' : 'Lambert'
+  'Grow Cactus': reconstructLSystem, // A function pointer, essentially
+  cactusColor: [60,130,23,1],
+  flowerColor: [217, 110, 87,1],
+  axiom: "AAA",
+  numIters: 2,
 };
 
 let icosphere: Icosphere;
@@ -30,14 +31,18 @@ let flag = false;
 let output = "";
 
 function loadScene() {
-  icosphere = new Icosphere(vec3.fromValues(0, 0, 0), 1, controls.tesselations);
-  icosphere.create();
   square = new Square(vec3.fromValues(0, 0, 0));
   square.create();
-  lsystemmesh = new LSystemMesh(vec3.fromValues(0, 0, 0), lsystem.lsystem);
-  lsystemmesh.create();
+
   cube = new Cube(vec3.fromValues(0, 0, 0));
   cube.create();
+}
+
+function reconstructLSystem() {
+    lsystem = new LSystem(vec3.fromValues(0,0,0), "[" + controls.axiom + "]");
+    lsystem.expandLSystem(controls.numIters);
+    lsystemmesh.lsystem = lsystem.lsystem;
+    flag = true;
 }
 
 
@@ -54,19 +59,18 @@ function main() {
   // Add controls to the gui
   const gui = new DAT.GUI();
   //const text = new GUIText();
-  gui.add(controls, 'tesselations', 0, 8).step(1);
-  gui.add(controls, 'Load Scene');
-  const colorPicker = gui.addColor(controls, 'color');
-  gui.add(controls, 'Shader', [ 'Lambert'] );
+  gui.add(controls, 'Grow Cactus');
+  const colorPicker = gui.addColor(controls, 'cactusColor');
+  const flowerPicker = gui.addColor(controls, 'flowerColor');
+  gui.add(controls, 'numIters', 1, 5).step(1);
+  gui.add(controls, 'axiom');
  
-  const colorPicked = vec4.fromValues(controls.color[0]/255,controls.color[1]/255,controls.color[2]/255,1)
-      
+  var colorPicked = vec4.fromValues(controls.cactusColor[0]/255,controls.cactusColor[1]/255,controls.cactusColor[2]/255,1)
+     
+  var flowerPicked = vec4.fromValues(controls.flowerColor[0]/255,controls.flowerColor[1]/255,controls.flowerColor[2]/255,1)
+       
   // Display new color whenever color is changed
-  colorPicker.onChange(function() {
-    const colorPicked = vec4.fromValues(controls.color[0]/255,controls.color[1]/255,controls.color[2]/255,1)
-      lambert.setGeometryColor(colorPicked);
-      customShader.setGeometryColor(colorPicked);
-  });
+
 
   // get canvas and webgl context
   const canvas = <HTMLCanvasElement> document.getElementById('canvas');
@@ -80,16 +84,30 @@ function main() {
   
 
   //LSYSTEM INIT 
-  lsystem = new LSystem(vec3.fromValues(0,0,0), "[AAA]");
+  lsystem = new LSystem(vec3.fromValues(0,0,0), "[" + controls.axiom + "]");
+  lsystem.expandLSystem(controls.numIters);
 
   // Initial call to load scene
-  loadScene();
+  //loadScene();
 
+  lsystemmesh = new LSystemMesh(vec3.fromValues(0, 0, 0), lsystem.lsystem);
+  lsystemmesh.lsystem = lsystem.lsystem;
+
+  lsystemmesh.cac_col = colorPicked;
+  lsystemmesh.create();
+  colorPicker.onChange(function() {
+    colorPicked = vec4.fromValues(controls.cactusColor[0]/255,controls.cactusColor[1]/255,controls.cactusColor[2]/255,1)
+    lsystemmesh.cac_col = colorPicked;
+  });
+  flowerPicker.onChange(function() {
+    flowerPicked = vec4.fromValues(controls.flowerColor[0]/255,controls.flowerColor[1]/255,controls.flowerColor[2]/255,1)
+    lsystemmesh.flow_col = flowerPicked;
+  });
 
   const camera = new Camera(vec3.fromValues(0, 0, 5), vec3.fromValues(0, 1, 0));
 
   const renderer = new OpenGLRenderer(canvas);
-  renderer.setClearColor(0.2, 0.2, 0.2, 1);
+  renderer.setClearColor(0.7, 0.9, 0.99, 1);
   gl.enable(gl.DEPTH_TEST);
 
   const lambert = new ShaderProgram([
@@ -109,8 +127,10 @@ function main() {
   function tick() {
     if(flag) {
       let vertices = loadMeshData(output);
-      console.log(output);
       lsystemmesh.storeFlowVerts(vertices.vertices);
+      
+      lsystemmesh.cac_col = colorPicked;
+      lsystemmesh.flow_col = flowerPicked;
       lsystemmesh.create();
       flag = false;
     }

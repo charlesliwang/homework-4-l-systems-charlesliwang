@@ -29,11 +29,11 @@ void main()
 
         // Calculate the diffuse term for Lambert shading
         float diffuseTerm = dot(normalize(fs_Nor), normalize(fs_LightVec));
-        diffuseTerm *= step(0.1,diffuseTerm);
+        //diffuseTerm *= step(0.1,diffuseTerm);
         // Avoid negative lighting values
         // diffuseTerm = clamp(diffuseTerm, 0, 1);
-
-        float ambientTerm = 0.2;
+        diffuseTerm = diffuseTerm * 0.5 + 0.5;
+        float ambientTerm = 0.1;
 
         float lightIntensity = diffuseTerm + ambientTerm;   //Add a small float value to the color multiplier
                                                             //to simulate ambient lighting. This ensures that faces that are not
