@@ -4,7 +4,7 @@ PennKey: chawang
 
 ![](img/cactus_example.png)
 
-[Live Demo](charlesliwang.github.io/homework-4-l-systems-charlesliwang)
+[Live Demo](http://charlesliwang.github.io/homework-4-l-systems-charlesliwang)
 
 ## Project Overview
 
